@@ -1,0 +1,33 @@
+[project]
+name = "ACT"
+version = "0.0.1"
+description = "Comon Discord server bot and api"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "audioop-lts>=0.2.1",
+    "discord-py>=2.4.0",
+    "fastapi[standard]>=0.115.8",
+    "google-generativeai>=0.8.4",
+    "pydantic>=2.10.6",
+    "pymongo==3.11.0",
+    "python-dotenv>=1.0.1",
+]
+#----------------------------------------------------------------------------------------------------
+[dependency-groups]
+dev = ["ipykernel>=6.29.5", "ipywidgets>=8.1.5", "taskipy>=1.14.1"]
+#----------------------------------------------------------------------------------------------------
+[tool.uv]
+cache-dir = "./.uv_cache"
+#----------------------------------------------------------------------------------------------------
+[tool.taskipy.tasks] # `uv run task <task-name>` (outside venv) or `uv run task <task-name>` (inside venv)
+# database:
+db = { cmd = "mongod --storageEngine=mmapv1 --port 1717 --dbpath .db", help = "run mongodb database server for development (.db folder must exist)" }
+db-man = { cmd = "mongo --port 1717", help = "run mongodb shell" }
+db-fix = { cmd = "mongod --storageEngine=mmapv1 --dbpath .db --repair", help = "fix mongodb database (.db folder must exist)" }
+# bot:
+bot = { cmd = "nodemon -x \"python\" main.py bot", help = "run discord bot app server for development (monitor mode using nodemon)" }
+bot-prod = { cmd = "python main.py bot", help = "run discord bot app server for production" }
+# api:
+api = { cmd = "fastapi dev main.py api", help = "run web rest api app server for development" }
+api-prod = { cmd = "fastapi run main.py api", help = "run web rest api app server for production" }
