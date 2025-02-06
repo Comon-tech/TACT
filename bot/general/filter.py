@@ -40,7 +40,7 @@ class Filter(Cog):
                 continue
             db_user = DbUser.load(user.id)
             if db_user:
-                db_user.xp -= self.XP_PENALTY
+                db_user.xp = max(0, db_user.xp - self.XP_PENALTY)
                 db_user.save()
                 self.offenses[user.id] = 0
                 await user.send(

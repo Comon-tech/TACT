@@ -61,17 +61,30 @@ class Board(Cog):
             await interaction.followup.send("No members found for the leaderboard.")
             return
         raw_db_users = raw_db_users.sort([("level", -1), ("xp", -1)])
-        embed = Embed(title="🏆 Leaderboard", color=Color.gold())
+        embed = Embed(title="🏆 Leaderboard", color=Color.blue())
         for i, raw_db_user in enumerate(raw_db_users[:10]):
             db_user = DbUser.create(raw_db_user)
             if not db_user:
                 continue
-            user = interaction.guild.get_member(db_user.id)
-            user_name = user.name if user else f"Unknown User ({db_user.id})"
-            user_avatar = user.display_avatar.url if user else ""
+            user = interaction.guild.get_member(
+                db_user.id
+            ) or await interaction.guild.fetch_member(db_user.id)
+            user_name = user.display_name if user else f"Unknown User ({db_user.id})"
             embed.add_field(
-                name=f"{i+1}. {user_name}",
-                value=f"Level: {db_user.level} | XP: {db_user.xp} \n[Avatar]({user_avatar})",
+                name="",
+                value=10 * "➖",
                 inline=False,
+            )
+            embed.add_field(
+                name="Player",
+                value=f"✨ **{i + 1}** 👤 {user_name}",
+            )
+            embed.add_field(
+                name=f"Level",
+                value=f"🏅 **{apnumber(db_user.level)}**",
+            )
+            embed.add_field(
+                name=f"XP",
+                value=f"💰 **{db_user.xp}** / {db_user.next_level_xp}",
             )
         await interaction.followup.send(embed=embed)
