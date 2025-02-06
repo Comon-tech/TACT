@@ -13,7 +13,3 @@ def run_api():
     @app.get("/users/{id}")
     def read_item(id: int, q: Union[str, None] = None):
         return {"id": id}
-
-
-if __name__ == "__main__":
-    run_api()

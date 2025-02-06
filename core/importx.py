@@ -1,10 +1,18 @@
-import importlib
+# ====================================================================================================
+# @ Import X
+# ----------------------------------------------------------------------------------------------------
+# 		Import utility extensions.
+# ====================================================================================================
 import inspect
 import os
 import sys
+from importlib import import_module
 from typing import List, Optional, Type
 
 
+# ----------------------------------------------------------------------------------------------------
+# * Import Classes
+# ----------------------------------------------------------------------------------------------------
 def import_classes(folder_name: str, class_type: Optional[Type] = None) -> List[Type]:
     """
     Import and return all classes defined inside modules in the given folder and its subfolders.
@@ -38,10 +46,11 @@ def import_classes(folder_name: str, class_type: Optional[Type] = None) -> List[
                 module_name = relative_module.replace(os.sep, ".").removesuffix(".py")
 
                 try:
-                    module = importlib.import_module(module_name)
+                    module = import_module(module_name)
                 except ModuleNotFoundError as e:
-                    print(f"Skipping {module_name} due to import error: {e}.")
-                    continue
+                    raise ModuleNotFoundError(
+                        f"Import error: No module named '{module_name}'", e
+                    )
 
                 # Extract classes from the module
                 for name, obj in inspect.getmembers(module, inspect.isclass):

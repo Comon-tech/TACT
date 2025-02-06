@@ -6,12 +6,17 @@ from bot.main import run_bot
 
 
 def main():
-    os.system("cls")  # clear screen (works on windows only)
-    commands = {"bot": run_bot, "api": run_api}
-    command_name = argv[1]
-    run_command = commands.get(command_name)
-    print(f"🔷 [{command_name}] Running...")
-    run_command() if run_command else print("Commands:", ", ".join(commands.keys()))
+    apps = {"bot": run_bot, "api": run_api}
+    app_names = apps.keys()
+    cmd_arg = argv[1] if len(argv) >= 2 else None
+    if cmd_arg in app_names:
+        os.system(f"cls && title ✈ {cmd_arg}")  # clears & sets title (windows only)
+        print(f"📂 {cmd_arg.upper()} app:\n")
+        apps.get(cmd_arg)()  # run app
+        print("\n❤  Bye!")
+    else:
+        print(f"'{cmd_arg}' command not available.")
+        print("\nCommands:", ", ".join(app_names))
 
 
 if __name__ == "__main__":

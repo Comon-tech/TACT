@@ -1,7 +1,7 @@
 [project]
 name = "ACT"
 version = "0.0.1"
-description = "Comon Discord server bot and api"
+description = "Assistant of Common Tech"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -9,6 +9,7 @@ dependencies = [
     "discord-py>=2.4.0",
     "fastapi[standard]>=0.115.8",
     "google-generativeai>=0.8.4",
+    "humanize>=4.11.0",
     "pydantic>=2.10.6",
     "pymongo==3.11.0",
     "python-dotenv>=1.0.1",

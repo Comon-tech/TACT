@@ -10,6 +10,7 @@ dependencies = [
     { name = "discord-py" },
     { name = "fastapi", extra = ["standard"] },
     { name = "google-generativeai" },
+    { name = "humanize" },
     { name = "pydantic" },
     { name = "pymongo" },
     { name = "python-dotenv" },
@@ -28,6 +29,7 @@ requires-dist = [
     { name = "discord-py", specifier = ">=2.4.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.8" },
     { name = "google-generativeai", specifier = ">=0.8.4" },
+    { name = "humanize", specifier = ">=4.11.0" },
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pymongo", specifier = "==3.11.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
@@ -612,6 +614,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b1/df/48c586a5fe32a0f01324ee087459e112ebb7224f646c0b5023f5e79e9956/httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc", size = 141406 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2a/39/e50c7c3a983047577ee07d2a9e53faf5a69493943ec3f6a384bdc792deb2/httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad", size = 73517 },
+]
+
+[[package]]
+name = "humanize"
+version = "4.11.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/40/64a912b9330786df25e58127194d4a5a7441f818b400b155e748a270f924/humanize-4.11.0.tar.gz", hash = "sha256:e66f36020a2d5a974c504bd2555cf770621dbdbb6d82f94a6857c0b1ea2608be", size = 80374 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/92/75/4bc3e242ad13f2e6c12e0b0401ab2c5e5c6f0d7da37ec69bc808e24e0ccb/humanize-4.11.0-py3-none-any.whl", hash = "sha256:b53caaec8532bcb2fff70c8826f904c35943f8cecaca29d272d9df38092736c0", size = 128055 },
 ]
 
 [[package]]
