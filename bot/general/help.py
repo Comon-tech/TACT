@@ -21,7 +21,7 @@ class Help(Cog):
         )
         for cmd in all_cmds:
             embed.add_field(
-                name=f"{self.bot.command_prefix}{cmd.name}",
+                name=f"/{cmd.name}",
                 value=cmd.description,
                 inline=False,
             )

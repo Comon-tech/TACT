@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
-
 from discord import Color, Embed, Interaction, Member, app_commands
+from discord.app_commands import command, guild_only
 from discord.ext.commands import Bot, Cog
-from humanize import apnumber, naturaltime
+from humanize import naturaltime
 
 from core.user import DbUser
 
@@ -13,78 +12,80 @@ class Board(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
 
+    # TODO: maybe call it "profile" ?
     @app_commands.guild_only()
     @app_commands.command(description="Get your or another member's information")
-    async def info(self, interaction: Interaction, user: Member = None):
-        user = user or interaction.user
-        db_user = DbUser.load(user.id)
+    async def info(self, interaction: Interaction, member: Member = None):
+        member = member or interaction.user
         embed = Embed(
-            title=f"{user.display_name}",
+            title=f"{member.display_name}",
             description=" ".join(
                 [
                     f"`{role.name}`"
-                    for role in user.roles
-                    if role != user.guild.default_role
+                    for role in member.roles
+                    if role != member.guild.default_role
                 ]
             ),
             color=Color.blue(),
         )
+        embed.set_thumbnail(url=member.display_avatar.url)
+        db_user = DbUser.load(member.id)
         if db_user:
             embed.add_field(name="", value="", inline=False)
             embed.add_field(
                 name="Level",
-                value=f"🏅 **{apnumber(db_user.level)}**\n{db_user.draw_level_progress_bar()}",
+                value=f"🏅 **{db_user.level}**\n{db_user.draw_level()}",
             )
             embed.add_field(
-                name="XP",
-                value=f"💰 **{db_user.xp}** / {db_user.next_level_xp}",
-            )
-            embed.add_field(
-                name="Inventory",
-                value=f"📦 **{apnumber(len(db_user.inventory))}** _items_",
-                inline=False,
+                name="Experience",
+                value=f"⏫ **{db_user.xp}** / {db_user.next_level_xp}\n{db_user.draw_xp()}",
             )
             embed.add_field(name="", value="", inline=False)
-            embed.add_field(
-                name="",
-                value=f"-# ⌚ _Joined_ {user.guild.name} **{naturaltime(user.joined_at)}**\n-# ⌚ _Joined_ Discord **{naturaltime(user.created_at)}**",
-            )
-            embed.set_thumbnail(url=user.display_avatar.url)
+            embed.add_field(name="Gold", value=f"💰 **{db_user.gold}**")
+            embed.add_field(name="Items", value=f"🎒 **{len(db_user.items)}**")
+            embed.add_field(name="", value="", inline=False)
+        embed.add_field(
+            name="",
+            value=f"-# ⌚ _Joined_ {member.guild.name} **{naturaltime(member.joined_at)}**\n-# ⌚ _Joined_ Discord **{naturaltime(member.created_at)}**",
+        )
         await interaction.response.send_message(embed=embed)
 
     @app_commands.guild_only()
     @app_commands.command(description="View leaderboard")
     async def leaderboard(self, interaction: Interaction):
         await interaction.response.defer()
-        raw_db_users = DbUser.COLLECTION.find()
-        if not raw_db_users:
+        db_users_raw = DbUser.COLLECTION.find()
+        if not db_users_raw:
             await interaction.followup.send("No members found for the leaderboard.")
             return
-        raw_db_users = raw_db_users.sort([("level", -1), ("xp", -1)])
+        db_users_raw = db_users_raw.sort([("level", -1), ("xp", -1), ("gold", -1)])
         embed = Embed(title="🏆 Leaderboard", color=Color.blue())
-        for i, raw_db_user in enumerate(raw_db_users[:10]):
-            db_user = DbUser.create(raw_db_user)
+        for i, db_user_raw in enumerate(db_users_raw[:10]):
+            db_user = DbUser.create(db_user_raw)
             if not db_user:
                 continue
-            user = interaction.guild.get_member(
-                db_user.id
-            ) or await interaction.guild.fetch_member(db_user.id)
-            user_name = user.display_name if user else f"Unknown User ({db_user.id})"
-            embed.add_field(
-                name="",
-                value=10 * "➖",
-                inline=False,
-            )
-            embed.add_field(
-                name="Player",
-                value=f"✨ **{i + 1}** 👤 {user_name}",
-            )
-            embed.add_field(
-                name=f"Level",
-                value=f"🏅 **{apnumber(db_user.level)}**",
-            )
-            embed.add_field(
-                name=f"XP",
-                value=f"💰 **{db_user.xp}** / {db_user.next_level_xp}",
-            )
+            guild = interaction.guild
+            member = guild.get_member(db_user.id)
+            if not member:
+                try:
+                    member = await guild.fetch_member(db_user.id)
+                except:
+                    pass
+            if member:
+                member_name = (
+                    member.display_name if member else f"Unknown User ({db_user.id})"
+                )
+                embed.add_field(
+                    name="",
+                    value=10 * "➖",
+                    inline=False,
+                )
+                embed.add_field(
+                    name=f"**{i + 1}** ✨ {member_name}",
+                    value=f" ",
+                )
+                embed.add_field(
+                    name=f"🏅 {db_user.level} ⏫ {db_user.xp} 💰 {db_user.gold}",
+                    value="",
+                )
         await interaction.followup.send(embed=embed)

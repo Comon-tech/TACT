@@ -1,7 +1,7 @@
 # ====================================================================================================
-# @ Import X
+# @ Utilities
 # ----------------------------------------------------------------------------------------------------
-# 		Import utility extensions.
+# 		General utility functions.
 # ====================================================================================================
 import inspect
 import os
@@ -60,3 +60,29 @@ def import_classes(folder_name: str, class_type: Optional[Type] = None) -> List[
                             classes.append(obj)
 
     return classes
+
+
+# ----------------------------------------------------------------------------------------------------
+# * Draw UTF-8 Progress Bar
+# ----------------------------------------------------------------------------------------------------
+def draw_utf8_progress_bar(
+    current: float,
+    max: float,
+    length: int = 5,
+    filled_char: str = "█",
+    empty_char: str = "░",
+) -> str:
+    if max == 0:
+        max = current if current != 0 else 1
+    normalized_value = int((current / max) * length)
+    type(normalized_value)
+    return (normalized_value * filled_char) + ((length - normalized_value) * empty_char)
+
+
+# ----------------------------------------------------------------------------------------------------
+# * Clamp
+# ----------------------------------------------------------------------------------------------------
+def clamp(
+    value: int | float, min_value: int | float, max_value: int | float
+) -> int | float:
+    return max(min_value, min(value, max_value))

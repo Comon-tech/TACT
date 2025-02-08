@@ -3,19 +3,21 @@ from typing import ClassVar
 from pydantic import NonNegativeInt, PositiveInt
 
 from .database import Model
+from .utils import draw_utf8_progress_bar
 
 
 # ----------------------------------------------------------------------------------------------------
 # * DbUser
 # ----------------------------------------------------------------------------------------------------
 class DbUser(Model, collection_name="users"):
-    id: int
+    id: int  # discord id
     xp: NonNegativeInt = 0
     level: PositiveInt = 1
-    inventory: list[str] = []
+    gold: NonNegativeInt = 0
+    items: list[str] = []
 
-    MAX_LEVEL: ClassVar = 61
-    ROLES: ClassVar = [
+    MAX_LEVEL: ClassVar[int] = 61
+    ROLES: ClassVar[list] = [
         ("Intermediate", 3),
         ("Novice", 9),
         ("Techie", 16),
@@ -25,10 +27,6 @@ class DbUser(Model, collection_name="users"):
         ("King", 49),
         ("Wizard", MAX_LEVEL),
     ]
-
-    def draw_level_progress_bar(self, length=5, on_icon="⭐", off_icon="☆") -> str:
-        normalized_level = int((self.level / self.MAX_LEVEL) * length)
-        return (normalized_level * on_icon) + ((length - normalized_level) * off_icon)
 
     @property
     def next_level_xp(self):
@@ -46,6 +44,12 @@ class DbUser(Model, collection_name="users"):
             self.level += 1
             return True
         return False
+
+    def draw_level(self) -> str:
+        return draw_utf8_progress_bar(self.level, self.MAX_LEVEL, 5, "⭐", "☆")
+
+    def draw_xp(self) -> str:
+        return draw_utf8_progress_bar(self.xp, self.next_level_xp, 10, "■", "□")
 
 
 # ----------------------------------------------------------------------------------------------------

@@ -1,9 +1,10 @@
 import os
 from abc import ABC
-from typing import ClassVar, Collection, Optional, Self, TypeVar
+from typing import ClassVar, Collection, Self, TypeVar
 
 import dotenv
-from pydantic import BaseModel, PositiveInt, PrivateAttr, RootModel, ValidationError
+from colorama import Fore
+from pydantic import BaseModel, ValidationError
 from pymongo import MongoClient, ReturnDocument
 from pymongo.database import Collection, Database
 from pymongo.results import UpdateResult
@@ -21,7 +22,9 @@ def get_database(name: str):
     server_info = database.client.server_info()
     ver = server_info.get("version", "?")
     bits = server_info.get("bits", "?")
-    print(f"[🌍{host}:{port}] 📀 MongoDB v{ver}-{bits}bits {name} database connected.")
+    print(
+        f"{Fore.GREEN}[🌍{host}:{port}] 📀 MongoDB v{ver}-{bits}bits {name} database connected.{Fore.RESET}\n"
+    )
     return database
 
 
@@ -54,6 +57,8 @@ class Model(DatabaseModel, database_name=PROJECT["name"]):
     def create(cls, data: dict) -> Self | None:
         """Creates an instance of the model with the provided data. Returns None if error."""
         try:
+            if not data:
+                return None
             return cls(**data)
         except ValidationError as e:
             print("⛔", e)
